@@ -1,0 +1,22 @@
+[package]
+name = "gitpure"
+version = "0.1.0"
+edition = "2024"
+authors = ["Max Dymond"]
+license = "MIT"
+
+[lib]
+name = "gitpure"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.25.0"
+
+[dependencies.gix]
+version = "0.73.0"
+default-features = false
+features = [
+    "blocking-http-transport-reqwest-rust-tls",
+    "parallel",
+    "worktree-mutation"
+]
