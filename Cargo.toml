@@ -1,9 +1,16 @@
 [package]
 name = "gitpure"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
-authors = ["Max Dymond"]
+authors = ["Max Dymond <cmeister2@gmail.com>"]
 license = "MIT"
+description = "A Python git library implemented in Rust using gitoxide"
+readme = "README.md"
+homepage = "https://github.com/cmeister2/gitpure"
+repository = "https://github.com/cmeister2/gitpure"
+documentation = "https://github.com/cmeister2/gitpure"
+keywords = ["git", "python", "rust", "gitoxide", "version-control"]
+categories = ["development-tools", "api-bindings"]
 
 [lib]
 name = "gitpure"

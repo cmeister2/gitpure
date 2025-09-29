@@ -4,13 +4,45 @@ build-backend = "maturin"
 
 [project]
 name = "gitpure"
+description = "A Python git library implemented in Rust using gitoxide"
+readme = "README.md"
 requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Max Dymond", email = "cmeister2@gmail.com"}
+]
+maintainers = [
+    {name = "Max Dymond", email = "cmeister2@gmail.com"}
+]
+keywords = ["git", "python", "rust", "gitoxide", "version-control"]
 classifiers = [
-    "Programming Language :: Rust",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Rust",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Version Control",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Typing :: Typed",
 ]
 dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/cmeister2/gitpure"
+Documentation = "https://github.com/cmeister2/gitpure"
+Repository = "https://github.com/cmeister2/gitpure"
+"Bug Reports" = "https://github.com/cmeister2/gitpure/issues"
+"Source Code" = "https://github.com/cmeister2/gitpure"
 
 [project.optional-dependencies]
 test = ["pytest"]
