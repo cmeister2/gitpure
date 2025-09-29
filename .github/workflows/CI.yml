@@ -47,7 +47,8 @@ jobs:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
-          manylinux: auto
+          # ring requires a newer version of manylinux on aarch64
+          manylinux: ${{ matrix.platform.target == 'aarch64' && '2_28' || 'auto' }}
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
