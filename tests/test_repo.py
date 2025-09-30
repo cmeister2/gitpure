@@ -1,13 +1,15 @@
 import tempfile
 from pathlib import Path
 
-from gitpure import Repo 
+from git import Repo as GitPythonRepo
+
+from gitpure import Repo
 
 def test_clone_and_git_dir_worktree():
     """Test cloning a worktree repository and git_dir property"""
     with tempfile.TemporaryDirectory() as tmpdir:
-        repo_url = "https://github.com/curl/wcurl"
-        repo_path = Path(tmpdir) / "wcurl"
+        repo_url = "https://github.com/cmeister2/gitpure"
+        repo_path = Path(tmpdir) / "gitpure"
         repo = Repo.clone_from(repo_url, str(repo_path))
         
         # Test basic clone functionality
@@ -44,8 +46,8 @@ def test_clone_and_git_dir_worktree():
 def test_clone_and_git_dir_bare():
     """Test cloning a bare repository and git_dir property"""
     with tempfile.TemporaryDirectory() as tmpdir:
-        repo_url = "https://github.com/curl/wcurl"
-        repo_path = Path(tmpdir) / "wcurl.git"
+        repo_url = "https://github.com/cmeister2/gitpure"
+        repo_path = Path(tmpdir) / "gitpure.git"
         repo = Repo.clone_from(repo_url, str(repo_path), bare=True)
         
         # Test bare clone functionality
@@ -74,3 +76,20 @@ def test_clone_and_git_dir_bare():
         # Test git_dir property type
         assert isinstance(git_dir, Path)
         assert git_dir.is_absolute()
+
+
+def test_branch_listing_matches_gitpython():
+    """Ensure branch listings are aligned with GitPython."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        repo_url = "https://github.com/cmeister2/gitpure"
+        repo_path = Path(tmpdir) / "gitpure"
+        repo = Repo.clone_from(repo_url, str(repo_path))
+
+        gitpure_branches = repo.branches()
+        assert isinstance(gitpure_branches, list)
+        assert all(isinstance(branch, str) for branch in gitpure_branches)
+
+        gitpython_repo = GitPythonRepo(str(repo_path))
+        gitpython_branches = sorted(head.name for head in gitpython_repo.branches)
+
+        assert gitpure_branches == gitpython_branches
