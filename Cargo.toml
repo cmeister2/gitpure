@@ -17,7 +17,7 @@ name = "gitpure"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.25.0"
+pyo3 = "0.26.0"
 
 [dependencies.gix]
 version = "0.73.0"
