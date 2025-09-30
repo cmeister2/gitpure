@@ -43,6 +43,53 @@ def test_clone_and_git_dir_worktree():
         git_dir3 = repo.git_dir
         assert git_dir == git_dir2 == git_dir3
 
+        # Metadata parity with GitPython
+        gitpython_repo = GitPythonRepo(str(repo_path))
+
+        gitpython_worktree = gitpython_repo.working_tree_dir
+        assert gitpython_worktree is not None
+        assert repo.working_tree_dir == Path(gitpython_worktree)
+        assert repo.is_bare is False
+        active_branch = repo.active_branch
+        assert active_branch is not None
+        assert active_branch.name == gitpython_repo.active_branch.name
+        assert active_branch.commit is not None
+        assert active_branch.commit.hexsha == gitpython_repo.active_branch.commit.hexsha
+
+        head = repo.head
+        assert head is not None
+        assert head.commit is not None
+        assert head.commit.hexsha == gitpython_repo.head.commit.hexsha
+        gitpure_heads = repo.heads
+        assert isinstance(gitpure_heads, list)
+        assert all(hasattr(head, "name") and hasattr(head, "commit") for head in gitpure_heads)
+
+        assert sorted(head.name for head in gitpure_heads) == sorted(
+            head.name for head in gitpython_repo.heads
+        )
+
+        assert sorted(head.commit.hexsha for head in gitpure_heads if head.commit) == sorted(
+            head.commit.hexsha for head in gitpython_repo.heads if head.commit
+        )
+
+        gitpure_tags = repo.tags
+        assert isinstance(gitpure_tags, list)
+        assert all(hasattr(tag, "name") and hasattr(tag, "commit") for tag in gitpure_tags)
+
+        assert sorted(tag.name for tag in gitpure_tags) == sorted(
+            tag.name for tag in gitpython_repo.tags
+        )
+
+        gitpure_tag_commits = {
+            tag.name: (tag.commit.hexsha if tag.commit else None)
+            for tag in gitpure_tags
+        }
+        gitpython_tag_commits = {
+            tag.name: (tag.commit.hexsha if tag.commit else None)
+            for tag in gitpython_repo.tags
+        }
+        assert gitpure_tag_commits == gitpython_tag_commits
+
 def test_clone_and_git_dir_bare():
     """Test cloning a bare repository and git_dir property"""
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -77,6 +124,38 @@ def test_clone_and_git_dir_bare():
         assert isinstance(git_dir, Path)
         assert git_dir.is_absolute()
 
+        # Metadata parity with GitPython
+        gitpython_repo = GitPythonRepo(str(repo_path))
+
+        assert gitpython_repo.working_tree_dir is None
+        assert repo.working_tree_dir is None
+        assert repo.is_bare is True
+        assert repo.active_branch is None
+
+        head = repo.head
+        assert head is not None
+        assert head.commit is not None
+        assert head.commit.hexsha == gitpython_repo.head.commit.hexsha
+        gitpure_heads = repo.heads
+        assert sorted(head.name for head in gitpure_heads) == sorted(
+            head.name for head in gitpython_repo.heads
+        )
+
+        gitpure_tags = repo.tags
+        assert sorted(tag.name for tag in gitpure_tags) == sorted(
+            tag.name for tag in gitpython_repo.tags
+        )
+
+        gitpure_tag_commits = {
+            tag.name: (tag.commit.hexsha if tag.commit else None)
+            for tag in gitpure_tags
+        }
+        gitpython_tag_commits = {
+            tag.name: (tag.commit.hexsha if tag.commit else None)
+            for tag in gitpython_repo.tags
+        }
+        assert gitpure_tag_commits == gitpython_tag_commits
+
 
 def test_branch_listing_matches_gitpython():
     """Ensure branch listings are aligned with GitPython."""
@@ -93,3 +172,7 @@ def test_branch_listing_matches_gitpython():
         gitpython_branches = sorted(head.name for head in gitpython_repo.branches)
 
         assert gitpure_branches == gitpython_branches
+
+        # heads property should mirror branches()
+        gitpure_heads = repo.heads
+        assert [head.name for head in gitpure_heads] == gitpure_branches
