@@ -45,7 +45,10 @@ Repository = "https://github.com/cmeister2/gitpure"
 "Source Code" = "https://github.com/cmeister2/gitpure"
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = [
+    "pytest",
+    "GitPython>=3.1",
+]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]

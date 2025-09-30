@@ -1,3 +1,4 @@
+use gix::bstr::ByteSlice;
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::{prelude::*, types::PyType};
 use std::path::Path;
@@ -62,6 +63,39 @@ impl Repo {
 
             Ok(Repo { inner: repo })
         }
+    }
+
+    /// Return the names of all local branches in the repository.
+    fn branches(&self) -> PyResult<Vec<String>> {
+        let platform = self.inner.references().map_err(|err| {
+            PyRuntimeError::new_err(format!("Failed to access references: {err}"))
+        })?;
+
+        let iter = platform.local_branches().map_err(|err| {
+            PyRuntimeError::new_err(format!("Failed to list local branches: {err}"))
+        })?;
+
+        let mut branches: Vec<String> = iter
+            .map(|reference_result| {
+                reference_result.map_err(|err| {
+                    PyRuntimeError::new_err(format!("Failed to load branch reference: {err}"))
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .map(|reference| {
+                let short_name = reference.name().shorten();
+                match short_name.to_str() {
+                    Ok(valid) => valid.to_owned(),
+                    Err(_) => short_name.to_string(),
+                }
+            })
+            .collect();
+
+        branches.sort();
+        branches.dedup();
+
+        Ok(branches)
     }
 }
 

@@ -17,6 +17,10 @@ class Repo:
             The absolute path to the .git directory as a pathlib.Path object
         """
         ...
+
+    def branches(self) -> list[str]:
+        """Return the names of all local branches in the repository."""
+        ...
     
     @classmethod
     def clone_from(cls: Type["Repo"], url: str, to_path: str, bare: bool = False) -> "Repo":
