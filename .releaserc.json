@@ -4,16 +4,10 @@
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     [
-      "@semantic-release/exec",
-      {
-        "prepareCmd": "semantic-release-cargo prepare ${nextRelease.version}"
-      }
-    ],
-    [
       "@semantic-release/github",
       {
         "assets": [
-          "dist/**/*"
+          "wheels-*/*"
         ]
       }
     ]
