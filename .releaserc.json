@@ -7,7 +7,7 @@
       "@semantic-release/github",
       {
         "assets": [
-          "wheels-*/*"
+          "wheels-sdist/*"
         ]
       }
     ]
