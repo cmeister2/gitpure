@@ -55,8 +55,9 @@ class Repo:
         """
         ...
 
-    def branches(self) -> list[str]:
-        """Return the names of all local branches in the repository."""
+    @property
+    def branches(self) -> list[Head]:
+        """Return all local branches as Head objects."""
         ...
 
     @property

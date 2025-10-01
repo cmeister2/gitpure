@@ -164,15 +164,15 @@ def test_branch_listing_matches_gitpython():
         repo_path = Path(tmpdir) / "gitpure"
         repo = Repo.clone_from(repo_url, str(repo_path))
 
-        gitpure_branches = repo.branches()
+        gitpure_branches = repo.branches
         assert isinstance(gitpure_branches, list)
-        assert all(isinstance(branch, str) for branch in gitpure_branches)
+        assert all(hasattr(branch, "name") and hasattr(branch, "commit") for branch in gitpure_branches)
 
         gitpython_repo = GitPythonRepo(str(repo_path))
         gitpython_branches = sorted(head.name for head in gitpython_repo.branches)
 
-        assert gitpure_branches == gitpython_branches
+        assert [branch.name for branch in gitpure_branches] == gitpython_branches
 
-        # heads property should mirror branches()
+        # branches property should mirror heads property
         gitpure_heads = repo.heads
-        assert [head.name for head in gitpure_heads] == gitpure_branches
+        assert [head.name for head in gitpure_heads] == [branch.name for branch in gitpure_branches]
