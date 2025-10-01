@@ -77,6 +77,21 @@ pip install pytest
 pytest tests/
 ```
 
+## Release process
+
+Releases are fully automated with [semantic-release](https://semantic-release.gitbook.io/). The pipeline will:
+
+1. Inspect the commit history on `main` using Conventional Commits to determine the next semantic version.
+2. Prepare the Rust crate via `semantic-release-cargo`, ensuring `Cargo.toml` and the Python wheel share the same version.
+3. Build wheels and source distributions with `maturin` and attach them to the GitHub release.
+4. Publish the distribution artifacts to PyPI.
+
+To keep releases working you must:
+
+- Continue to write commits that follow the Conventional Commits specification (`feat:`, `fix:`, etc.).
+
+You can trigger a release by merging changes into `main`.
+
 ## Architecture
 
 gitpure is built on top of:
