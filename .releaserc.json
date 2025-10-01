@@ -1,0 +1,22 @@
+{
+  "tagFormat": "${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {
+        "verifyConditionsCmd": "semantic-release-cargo verify-conditions",
+        "prepareCmd": "semantic-release-cargo prepare ${nextRelease.version}"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          "dist/**/*"
+        ]
+      }
+    ]
+  ]
+}

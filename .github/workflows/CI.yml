@@ -9,11 +9,7 @@ on:
   push:
     branches:
       - main
-      - master
-    tags:
-      - '*'
   pull_request:
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -158,15 +154,6 @@ jobs:
           name: wheels-macos-${{ matrix.platform.target }}
           path: dist
 
-  success:
-    name: Success
-    runs-on: ubuntu-latest
-    needs: [tests, linux, musllinux, windows, macos, sdist]
-    if: ${{ !cancelled() && !failure() }}
-    steps:
-      - name: Mark success
-        run: echo "All required jobs completed successfully."
-
   sdist:
     runs-on: ubuntu-latest
     steps:
@@ -182,11 +169,19 @@ jobs:
           name: wheels-sdist
           path: dist
 
+  # Determine the next version of the codebase.
+  get-next-version:
+    uses: semantic-release-action/next-release-version/.github/workflows/next-release-version.yml@v4
+    permissions:
+      contents: write
+
   release:
     name: Release
+    needs: [get-next-version, sdist, linux, musllinux, windows, macos]
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-    needs: [tests, linux, musllinux, windows, macos, sdist]
+    if: needs.get-next-version.outputs.new-release-published == 'true'
+    env:
+      NEW_VERSION: ${{ needs.get-next-version.outputs.new-release-version }}
     permissions:
       # Use to sign the release artifacts
       id-token: write
@@ -196,16 +191,47 @@ jobs:
       attestations: write
     environment:
       name: pypi
-      url: https://pypi.org/p/gitpure      
+      url: https://pypi.org/p/gitpure
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
         with:
           subject-path: 'wheels-*/*'
+      - name: Install semantic-release-cargo
+        run: cargo install --locked semantic-release-cargo
+
+      - name: Prepare cargo package version
+        run: semantic-release-cargo prepare ${NEW_VERSION}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
       - name: Publish to PyPI
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         uses: PyO3/maturin-action@86b9d133d34bc1b40018696f782949dac11bd380 # v1
         with:
           command: upload
           args: --non-interactive --skip-existing wheels-*/*
+
+  success:
+    name: Success
+    runs-on: ubuntu-latest
+    needs: [tests, linux, musllinux, windows, macos, sdist]
+    if: ${{ !cancelled() && !failure() }}
+    steps:
+      - name: Mark success
+        run: echo "All required jobs completed successfully."
