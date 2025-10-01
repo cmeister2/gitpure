@@ -120,7 +120,7 @@ struct Repo {
     inner: gix::Repository,
 }
 
-fn path_to_python(py: Python<'_>, path: &Path) -> PyResult<PyObject> {
+fn path_to_python(py: Python<'_>, path: &Path) -> PyResult<Py<PyAny>> {
     let pathlib = py.import("pathlib")?;
     let path_class = pathlib.getattr("Path")?;
     Ok(path_class.call1((path.as_os_str(),))?.into())
@@ -138,13 +138,13 @@ fn shorten_reference_name(reference: &gix::Reference) -> String {
 impl Repo {
     /// The path to the `.git` directory of the repository.
     #[getter]
-    fn git_dir(&self, py: Python) -> PyResult<PyObject> {
+    fn git_dir(&self, py: Python) -> PyResult<Py<PyAny>> {
         path_to_python(py, self.inner.git_dir())
     }
 
     /// The path to the working tree directory, if present.
     #[getter]
-    fn working_tree_dir(&self, py: Python) -> PyResult<Option<PyObject>> {
+    fn working_tree_dir(&self, py: Python) -> PyResult<Option<Py<PyAny>>> {
         match self.inner.workdir() {
             Some(path) => Ok(Some(path_to_python(py, path)?)),
             None => Ok(None),
@@ -202,30 +202,10 @@ impl Repo {
         }
     }
 
-    /// Return the names of all local branches in the repository.
-    fn branches(&self) -> PyResult<Vec<String>> {
-        let platform = self.inner.references().map_err(|err| {
-            PyRuntimeError::new_err(format!("Failed to access references: {err}"))
-        })?;
-
-        let iter = platform.local_branches().map_err(|err| {
-            PyRuntimeError::new_err(format!("Failed to list local branches: {err}"))
-        })?;
-
-        let branches: BTreeSet<String> = iter
-            .map(|reference_result| {
-                reference_result.map_err(|err| {
-                    PyRuntimeError::new_err(format!(
-                        "Failed to load branch reference: {err}"
-                    ))
-                })
-            })
-            .collect::<Result<Vec<_>, _>>()?
-            .into_iter()
-            .map(|reference| shorten_reference_name(&reference))
-            .collect();
-
-        Ok(branches.into_iter().collect())
+    /// Return all local branches in the repository.
+    #[getter]
+    fn branches(&self) -> PyResult<Vec<Head>> {
+        self.heads()
     }
 
     /// Return the path to the current active branch, if any.
