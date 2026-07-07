@@ -1,9 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:best-practices",
-    "group:allNonMajor",
-    ":automergeAll",
-    ":assignAndReview(cmeister2)"
-  ]
+  "extends": ["github>cmeister2/renovate"]
 }
