@@ -44,7 +44,7 @@ jobs:
         with:
           python-version: '3.14'
       - name: Set up Rust toolchain
-        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
       - name: Set Cargo.toml package version
         uses: colt-1/toml-editor@da6b46ee7779ed730d2160393ed95fb20e82696d # 1.1.1
         with:
@@ -98,7 +98,7 @@ jobs:
           # ring/aws-lc require a newer version of manylinux on some architectures
           manylinux: ${{ (matrix.platform.target == 'aarch64' || matrix.platform.target == 'ppc64le') && '2_28' || 'auto' }}
       - name: Upload wheels
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: wheels-linux-${{ matrix.platform.target }}
           path: dist
@@ -136,7 +136,7 @@ jobs:
           sccache: false
           manylinux: musllinux_1_2
       - name: Upload wheels
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: wheels-musllinux-${{ matrix.platform.target }}
           path: dist
@@ -170,7 +170,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: false
       - name: Upload wheels
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: wheels-windows-${{ matrix.platform.target }}
           path: dist
@@ -203,7 +203,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: false
       - name: Upload wheels
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: wheels-macos-${{ matrix.platform.target }}
           path: dist
@@ -226,7 +226,7 @@ jobs:
           args: --out dist
           sccache: false
       - name: Upload sdist
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: wheels-sdist
           path: dist
@@ -253,13 +253,13 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: 'wheels-*/*'
       - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 'lts/*'
       - name: Install npm dependencies
