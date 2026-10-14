@@ -17,10 +17,10 @@ name = "gitpure"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.29.0"
+pyo3 = "0.30.0"
 
 [dependencies.gix]
-version = "0.87.0"
+version = "0.89.0"
 default-features = false
 features = [
     "blocking-http-transport-reqwest-rust-tls",
