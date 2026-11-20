@@ -44,7 +44,7 @@ jobs:
         with:
           python-version: '3.15'
       - name: Set up Rust toolchain
-        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # stable
       - name: Set Cargo.toml package version
         uses: colt-1/toml-editor@da6b46ee7779ed730d2160393ed95fb20e82696d # 1.1.1
         with:
